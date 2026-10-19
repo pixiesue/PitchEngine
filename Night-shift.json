@@ -1,0 +1,143 @@
+{
+  "version": 1,
+  "name": "Night shift",
+  "width": 2400,
+  "height": 720,
+  "entities": [
+    {
+      "id": "demo-0",
+      "kind": "platform",
+      "x": 0,
+      "y": 640,
+      "w": 2400,
+      "h": 80,
+      "patrol": 0
+    },
+    {
+      "id": "demo-1",
+      "kind": "platform",
+      "x": 400,
+      "y": 496,
+      "w": 240,
+      "h": 24,
+      "patrol": 0
+    },
+    {
+      "id": "demo-2",
+      "kind": "platform",
+      "x": 760,
+      "y": 400,
+      "w": 224,
+      "h": 24,
+      "patrol": 0
+    },
+    {
+      "id": "demo-3",
+      "kind": "platform",
+      "x": 1136,
+      "y": 496,
+      "w": 256,
+      "h": 24,
+      "patrol": 0
+    },
+    {
+      "id": "demo-4",
+      "kind": "platform",
+      "x": 1488,
+      "y": 400,
+      "w": 224,
+      "h": 24,
+      "patrol": 0
+    },
+    {
+      "id": "demo-5",
+      "kind": "platform",
+      "x": 1728,
+      "y": 480,
+      "w": 256,
+      "h": 24,
+      "patrol": 0
+    },
+    {
+      "id": "demo-6",
+      "kind": "cover",
+      "x": 304,
+      "y": 560,
+      "w": 96,
+      "h": 80,
+      "patrol": 0
+    },
+    {
+      "id": "demo-7",
+      "kind": "cover",
+      "x": 1008,
+      "y": 560,
+      "w": 112,
+      "h": 80,
+      "patrol": 0
+    },
+    {
+      "id": "demo-8",
+      "kind": "cover",
+      "x": 1552,
+      "y": 560,
+      "w": 112,
+      "h": 80,
+      "patrol": 0
+    },
+    {
+      "id": "demo-9",
+      "kind": "cover",
+      "x": 2048,
+      "y": 560,
+      "w": 96,
+      "h": 80,
+      "patrol": 0
+    },
+    {
+      "id": "demo-10",
+      "kind": "guard",
+      "x": 640,
+      "y": 584,
+      "w": 32,
+      "h": 56,
+      "patrol": 208
+    },
+    {
+      "id": "demo-11",
+      "kind": "guard",
+      "x": 1328,
+      "y": 584,
+      "w": 32,
+      "h": 56,
+      "patrol": 176
+    },
+    {
+      "id": "demo-12",
+      "kind": "guard",
+      "x": 1872,
+      "y": 584,
+      "w": 32,
+      "h": 56,
+      "patrol": 144
+    },
+    {
+      "id": "demo-13",
+      "kind": "spawn",
+      "x": 96,
+      "y": 588,
+      "w": 32,
+      "h": 52,
+      "patrol": 0
+    },
+    {
+      "id": "demo-14",
+      "kind": "exit",
+      "x": 2288,
+      "y": 544,
+      "w": 64,
+      "h": 96,
+      "patrol": 0
+    }
+  ]
+}

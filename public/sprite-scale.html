@@ -1,0 +1,126 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>PitchEngine | Player scale mockup</title>
+  <style>
+    :root { color-scheme: dark; font-family: "Segoe UI", system-ui, sans-serif; background: #10151c; color: #d9e2ed; }
+    * { box-sizing: border-box; }
+    body { max-width: 1328px; margin: auto; padding: 24px; }
+    header { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+    h1 { font-size: 24px; margin: 0; }
+    p { color: #95a5ba; line-height: 1.5; font-size: 13px; }
+    a { color: #8bafff; }
+    nav { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin: 18px 0; }
+    button, select { background: #202b38; color: #d9e2ed; border: 1px solid #344151; border-radius: 6px; padding: 9px 16px; font: inherit; font-size: 13px; cursor: pointer; }
+    button[aria-pressed="true"] { background: #8bafff; color: #101824; border-color: #8bafff; }
+    button:focus-visible, select:focus-visible { outline: 2px solid #b8caff; outline-offset: 3px; }
+    label { margin-left: auto; font-size: 13px; }
+    canvas { display: block; width: 100%; border: 1px solid #354355; border-radius: 8px; background: #1b2937; }
+    #comparison { margin-top: 18px; }
+    .note { border-left: 3px solid #a68b59; padding-left: 12px; }
+    #status.error { color: #ff9b86; }
+    @media (max-width: 600px) { body { padding: 12px; } header { flex-wrap: wrap; } label { margin-left: 0; } }
+  </style>
+</head>
+<body>
+  <header><h1>Player scale study</h1><a href="./">Back to engine</a></header>
+  <p>Same camera, same level geometry. Only the player artwork changes size. A static visual mockup, not a gameplay change.</p>
+  <nav aria-label="Player sprite scale">
+    <button data-scale="1" aria-pressed="false">100% / current</button>
+    <button data-scale="2" aria-pressed="true">200%</button>
+    <button data-scale="2.5" aria-pressed="false">250%</button>
+    <button data-scale="3" aria-pressed="false">300%</button>
+    <label>Pose <select id="pose"><option value="0">Idle</option><option value="6">Running</option><option value="30">Crouch shooting</option><option value="22">Running shooting</option></select></label>
+  </nav>
+  <canvas id="scene" width="1280" height="720" aria-label="Level mockup with enlarged player"></canvas>
+  <canvas id="comparison" width="1280" height="260" aria-label="Player sprites at 100, 200, 250, and 300 percent, aligned on the same ground"></canvas>
+  <p id="status" role="status" aria-live="polite">Loading player artwork...</p>
+  <p class="note">At 200%, the standing character is about 110 world pixels tall instead of 55. At 250% it is about 138; at 300%, about 165. Guards remain their current size for reference. A production change would also need decisions about collision size, cover height, weapon origins, and camera framing.</p>
+  <script type="module">
+    const image = new Image();
+    image.src = "./player.png";
+    const scene = document.querySelector("#scene");
+    const comparison = document.querySelector("#comparison");
+    const pose = document.querySelector("#pose");
+    const status = document.querySelector("#status");
+    const context = scene.getContext("2d");
+    const comparisonContext = comparison.getContext("2d");
+    let scale = 2;
+    let ready = false;
+
+    function player(ctx, x, feet, multiplier, frame) {
+      const size = 0.28 * multiplier;
+      ctx.save();
+      ctx.imageSmoothingEnabled = false;
+      ctx.drawImage(image, frame % 4 * 256, Math.floor(frame / 4) * 224, 256, 224,
+        x - 96 * size, feet - 216 * size, 256 * size, 224 * size);
+      ctx.restore();
+    }
+
+    function draw() {
+      if (!ready) return;
+      const ctx = context;
+      const gradient = ctx.createLinearGradient(0, 0, 0, 720);
+      gradient.addColorStop(0, "#101824");
+      gradient.addColorStop(1, "#263848");
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, 1280, 720);
+      for (let i = 0; i < 8; i++) {
+        ctx.fillStyle = "#1b2937";
+        ctx.fillRect(i * 180, 300 + (i % 3) * 32, 130, 420);
+        ctx.fillStyle = "#324451";
+        for (let j = 0; j < 3; j++) ctx.fillRect(i * 180 + 20 + j * 32, 380, 12, 4);
+      }
+      for (const [x, y, w, h] of [[0, 640, 1280, 80], [400, 496, 240, 24], [760, 400, 224, 24], [1136, 496, 256, 24]]) {
+        ctx.fillStyle = "#46596b"; ctx.fillRect(x, y, w, h);
+        ctx.fillStyle = "#7d95a7"; ctx.fillRect(x, y, w, 4);
+      }
+      for (const [x, w] of [[304, 96], [1008, 112]]) {
+        ctx.fillStyle = "#a68b59"; ctx.fillRect(x, 560, w, 80);
+        ctx.fillStyle = "#ccb17e"; ctx.fillRect(x, 560, w, 4);
+        ctx.strokeStyle = "#75603c"; ctx.lineWidth = 3;
+        ctx.strokeRect(x + 8, 570, w - 16, 60);
+        ctx.beginPath(); ctx.moveTo(x + 8, 570); ctx.lineTo(x + w - 8, 630); ctx.stroke();
+      }
+      ctx.fillStyle = "#f29772";
+      ctx.fillRect(645, 598, 22, 42); ctx.fillRect(648, 584, 16, 15); ctx.fillRect(628, 607, 16, 5);
+      player(ctx, 112, 640, scale, Number(pose.value));
+      ctx.fillStyle = "#b8caff"; ctx.font = "18px monospace";
+      ctx.fillText(`PLAYER ${scale * 100}% / CAMERA 1x`, 24, 34);
+      const c = comparisonContext;
+      c.fillStyle = "#182431"; c.fillRect(0, 0, 1280, 260);
+      c.fillStyle = "#7d95a7"; c.fillRect(0, 224, 1280, 2);
+      for (const [index, multiplier] of [1, 2, 2.5, 3].entries()) {
+        const x = 120 + index * 320;
+        player(c, x, 224, multiplier, Number(pose.value));
+        c.fillStyle = multiplier === scale ? "#b8caff" : "#95a5ba";
+        c.font = "16px monospace"; c.fillText(`${multiplier * 100}%`, x - 20, 249);
+      }
+      scene.setAttribute("aria-label", `Level mockup with player at ${scale * 100} percent scale`);
+      status.textContent = `${scale * 100}% preview. Gameplay and collision sizes are unchanged.`;
+    }
+
+    for (const button of document.querySelectorAll("[data-scale]")) {
+      button.addEventListener("click", () => {
+        scale = Number(button.dataset.scale);
+        for (const item of document.querySelectorAll("[data-scale]")) item.setAttribute("aria-pressed", String(item === button));
+        draw();
+      });
+    }
+    pose.addEventListener("change", draw);
+    try {
+      if (!context || !comparisonContext) throw new Error("Canvas 2D is unavailable.");
+      await image.decode();
+      if (image.naturalWidth !== 1024 || image.naturalHeight !== 2240) throw new Error("Unexpected player atlas dimensions.");
+      ready = true;
+      draw();
+    } catch (error) {
+      console.error(error);
+      status.classList.add("error");
+      status.textContent = `Cannot render mockup: ${error instanceof Error ? error.message : String(error)}`;
+    }
+  </script>
+</body>
+</html>
